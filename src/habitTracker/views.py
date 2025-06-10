@@ -14,9 +14,7 @@ class RotinaViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
 
     def get_queryset(self):
-        # Retorna só as rotinas do usuário logado
         return Rotina.objects.filter(usuario=self.request.user)
 
     def perform_create(self, serializer):
-        # Associa o hábito ao usuário logado
         serializer.save(usuario=self.request.user)
