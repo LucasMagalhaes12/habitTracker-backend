@@ -1,27 +1,22 @@
-from django.shortcuts import render
-
 from rest_framework import viewsets, permissions
+from .models import Rotina
+from .serializers import RotinaSerializer
 from django.contrib.auth.models import User
-from .models import Postagem, Comentario
-from .serializers import UsuarioSerializer, PostagemSerializer, ComentarioSerializer
+from .serializers import UsuarioSerializer
 
 class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UsuarioSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
-class PostagemViewSet(viewsets.ModelViewSet):
-    queryset = Postagem.objects.all()
-    serializer_class = PostagemSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+class RotinaViewSet(viewsets.ModelViewSet):
+    serializer_class = RotinaSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        # Retorna só as rotinas do usuário logado
+        return Rotina.objects.filter(usuario=self.request.user)
 
     def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user)
-
-class ComentarioViewSet(viewsets.ModelViewSet):
-    queryset = Comentario.objects.all()
-    serializer_class = ComentarioSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-    def perform_create(self, serializer):
+        # Associa o hábito ao usuário logado
         serializer.save(usuario=self.request.user)
