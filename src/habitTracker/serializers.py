@@ -1,15 +1,20 @@
 from rest_framework import serializers
+from .models import Habito, RegistroHabito
 from django.contrib.auth.models import User
-from .models import Rotina
 
-class UsuarioSerializer(serializers.ModelSerializer):
+class RegistroHabitoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = RegistroHabito
+        fields = '__all__'
+
+class HabitoSerializer(serializers.ModelSerializer):
+    registros = RegistroHabitoSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Habito
+        fields = ['id', 'nome', 'descricao', 'frequencia', 'hora_sugerida', 'usuario', 'registros']
+
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email']
-
-class RotinaSerializer(serializers.ModelSerializer):
-    usuario = UsuarioSerializer(read_only=True)
-
-    class Meta:
-        model = Rotina
-        fields = ['id', 'nome', 'descricao', 'criado_em', 'usuario']

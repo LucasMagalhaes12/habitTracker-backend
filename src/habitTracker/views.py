@@ -1,20 +1,23 @@
 from rest_framework import viewsets, permissions
-from .models import Rotina
-from .serializers import RotinaSerializer
-from django.contrib.auth.models import User
-from .serializers import UsuarioSerializer
+from .models import Habito, RegistroHabito
+from .serializers import HabitoSerializer, RegistroHabitoSerializer
+from rest_framework.permissions import IsAuthenticated
 
-class UsuarioViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = User.objects.all()
-    serializer_class = UsuarioSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-
-class RotinaViewSet(viewsets.ModelViewSet):
-    serializer_class = RotinaSerializer
-    permission_classes = [permissions.IsAuthenticated]
+class HabitoViewSet(viewsets.ModelViewSet):
+    queryset = Habito.objects.all()
+    serializer_class = HabitoSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Rotina.objects.filter(usuario=self.request.user)
+        return Habito.objects.filter(usuario=self.request.user)
 
     def perform_create(self, serializer):
         serializer.save(usuario=self.request.user)
+
+class RegistroHabitoViewSet(viewsets.ModelViewSet):
+    queryset = Habito.objects.all()
+    serializer_class = RegistroHabitoSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        return RegistroHabito.objects.filter(habito__usuario=self.request.user)
