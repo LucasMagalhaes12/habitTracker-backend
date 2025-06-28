@@ -8,11 +8,11 @@ class HabitoViewSet(viewsets.ModelViewSet):
     serializer_class = HabitoSerializer
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        return Habito.objects.filter(usuario=self.request.user)
+    # def get_queryset(self):
+    #     return Habito.objects.filter(usuario=self.request.user)
 
-    def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user)
+    # def perform_create(self, serializer):
+    #     serializer.save(usuario=self.request.user)
 
 class RegistroHabitoViewSet(viewsets.ModelViewSet):
     queryset = Habito.objects.all()
@@ -21,3 +21,8 @@ class RegistroHabitoViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         return RegistroHabito.objects.filter(habito__usuario=self.request.user)
+
+
+def habitos(response):
+    habitos = Habito.objects.filter(username=self.user)
+    return HTtpJson
