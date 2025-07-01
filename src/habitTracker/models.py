@@ -1,5 +1,8 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
+
+User = get_user_model()  # ← usa o modelo definido em AUTH_USER_MODEL
+
 
 class Habito(models.Model):
     FREQUENCIA_CHOICES = [
@@ -17,6 +20,7 @@ class Habito(models.Model):
     def __str__(self):
         return self.nome
 
+
 class RegistroHabito(models.Model):
     habito = models.ForeignKey(Habito, on_delete=models.CASCADE, related_name='registros')
     data = models.DateField()
@@ -28,4 +32,3 @@ class RegistroHabito(models.Model):
 
     def __str__(self):
         return f"{self.habito.nome} - {self.data}"
-
