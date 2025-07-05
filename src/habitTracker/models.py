@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
-
+from datetime import date
 User = get_user_model()  # ← usa o modelo definido em AUTH_USER_MODEL
 
 
@@ -10,11 +10,12 @@ class Habito(models.Model):
         ('S', 'Semanal'),
         ('M', 'Mensal'),
     ]
-
+    
     nome = models.CharField(max_length=100)
     descricao = models.TextField(blank=True)
     frequencia = models.CharField(max_length=1, choices=FREQUENCIA_CHOICES)
     hora_sugerida = models.TimeField(null=True, blank=True)
+    dias_semana = models.JSONField(default=list)  # ← Aqui armazenamos os dias
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, related_name='habitos')
 
     def __str__(self):
@@ -23,7 +24,7 @@ class Habito(models.Model):
 
 class RegistroHabito(models.Model):
     habito = models.ForeignKey(Habito, on_delete=models.CASCADE, related_name='registros')
-    data = models.DateField()
+    data = models.DateField(default=date.today)
     feito = models.BooleanField(default=False)
     observacoes = models.TextField(blank=True)
 

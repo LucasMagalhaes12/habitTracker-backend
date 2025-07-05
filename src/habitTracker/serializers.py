@@ -12,7 +12,10 @@ class HabitoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Habito
-        fields = ['id', 'nome', 'descricao', 'frequencia', 'hora_sugerida', 'usuario', 'registros']
+        fields = [
+            'id', 'nome', 'descricao', 'frequencia',
+            'hora_sugerida', 'dias_semana', 'usuario', 'registros'
+        ]
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
