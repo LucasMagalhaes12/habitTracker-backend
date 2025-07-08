@@ -5,7 +5,11 @@ from .models import Habito, RegistroHabito
 from .serializers import HabitoSerializer, RegistroHabitoSerializer
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import api_view, permission_classes
-from  datetime import date
+from datetime import date, timedelta
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from .models import RegistroHabito
 
 class HabitoViewSet(viewsets.ModelViewSet):
     queryset = Habito.objects.all()
@@ -36,7 +40,7 @@ class RegistroHabitoViewSet(viewsets.ModelViewSet):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def marcar_habito_como_feito(request, habito_id):
-    # Usa a data atual como "dia"
+   
     data_hoje = date.today()
 
     try:
@@ -44,7 +48,7 @@ def marcar_habito_como_feito(request, habito_id):
     except Habito.DoesNotExist:
         return Response({'error': 'Hábito não encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
-    # Cria o registro com o campo correto: data
+    
     RegistroHabito.objects.create(
         habito=habito,
         data=data_hoje,
@@ -52,3 +56,18 @@ def marcar_habito_como_feito(request, habito_id):
     )
 
     return Response({'status': 'Hábito marcado como feito!'}, status=status.HTTP_201_CREATED)
+
+def progresso_semanal(request):
+    hoje = date.today()
+    inicio_semana = hoje - timedelta(days=hoje.weekday() + 1)  # domingo
+    fim_semana = inicio_semana + timedelta(days=6)             # sábado
+
+    registros = RegistroHabito.objects.filter(
+        habito__usuario=request.user,
+        data__range=(inicio_semana, fim_semana),
+        feito=True
+    )
+
+    total_realizados = registros.count()
+    
+    return Response({'realizados': total_realizados})
